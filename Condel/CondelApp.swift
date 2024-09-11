@@ -8,7 +8,7 @@
 import SwiftUI
 
 @main
-struct CondelApp: App 
+struct CondelApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
