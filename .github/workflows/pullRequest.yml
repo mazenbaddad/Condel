@@ -10,21 +10,18 @@ jobs:
   test:
     runs-on: macos-14
     steps:
-#      - name: checkout code
-        - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
       - name: Cancel Previous Runs
         uses: styfle/cancel-workflow-action@0.9.1
         with:
           access_token: ${{ github.token }}
 
-#      - name: setup xcode
-        - uses: maxim-lobanov/setup-xcode@v1
+      - uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: latest-stable
 
-#      - name: setup ruby
-        - uses: ruby/setup-ruby@v1
+      - uses: ruby/setup-ruby@v1
 
       - name: Install Bundler
         run: gem install bundler
@@ -32,20 +29,23 @@ jobs:
       - name: Install gems
         run: bundle install
 
-#      - name: Swift Packages Cache
-#        uses: actions/cache@v2
-#        id: cache
-#        with:
-#          path: |
-#            Build/SourcePackages
-#            Build/Build/Products
-#          key: ${{ runner.os }}-deps-v1-${{ hashFiles('BILDsolid.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved') }}
-#          restore-keys: ${{ runner.os }}-deps-v1-
+      - name: Swift Packages Cache
+        uses: actions/cache@v2
+        id: cache
+        with:
+          path: |
+            Build/SourcePackages
+            Build/Build/Products
+          key: ${{ runner.os }}-deps-v1-${{ hashFiles('BILDsolid.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved') }}
+          restore-keys: ${{ runner.os }}-deps-v1-
 
-#      - name: Run Tests (No Cache)
-      - name: Run Tests
+      - name: Run Tests (No Cache)
         if: steps.setup.outputs.cache-hit != 'true'
         run: bundle exec fastlane build_test
+      
+      - name: Run Tests (Cache)
+        if: steps.setup.outputs.cache-hit == 'true'
+        run: bundle exec fastlane unit_test skip_package_dependencies_resolution:true
       
 #      - name: Run Tests (Cache)
 #        if: steps.setup.outputs.cache-hit == 'true'
